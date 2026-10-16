@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Innebandy Scoreboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap');
+    .digital-font {
+      font-family: 'Chakra Petch', monospace;
+    }
+
+    @keyframes match-end-blink {
+      0%, 100% { background-color: #020617; } /* slate-950 */
+      50% { background-color: #991b1b; }      /* red-800 */
+    }
+
+    .animate-blink-red {
+      animation: match-end-blink 0.5s infinite;
+    }
+
+    @keyframes sub-alert-blink {
+      0%, 100% { background-color: #991b1b; border-color: #ef4444; }
+      50% { background-color: #450a0a; border-color: #b91c1c; }
+    }
+
+    .sub-timer-expired {
+      animation: sub-alert-blink 0.8s infinite !important;
+    }
+  </style>
+</head>
+<body id="main-body" class="bg-slate-950 text-white select-none min-h-screen flex flex-col justify-between p-3 sm:p-6 transition-colors duration-200">
+
+  <!-- Header -->
+  <header class="text-center">
+    <h1 class="text-base sm:text-xl font-semibold tracking-widest text-slate-400 uppercase">Innebandy Match Center</h1>
+  </header>
+
+  <!-- Hovedinnhold / Match Grid -->
+  <main class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 my-auto items-stretch py-2">
+    
+    <!-- Venstre Lag Box -->
+    <div id="card-left" class="bg-gradient-to-b from-orange-950/80 to-orange-900/60 border-2 border-orange-500/50 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between items-center relative overflow-hidden min-h-[360px] sm:min-h-[400px]">
+      <input id="name-left" type="text" value="ORANGE" class="bg-transparent text-2xl sm:text-3xl font-bold text-center text-orange-400 mb-1 focus:outline-none focus:border-b border-orange-400 uppercase tracking-wider w-full z-10">
+      
+      <!-- Mål-tall -->
+      <div id="score-left" class="digital-font text-7xl sm:text-8xl lg:text-9xl font-bold text-orange-100 z-10 my-1 pointer-events-none drop-shadow-md">0</div>
+      
+      <!-- + MÅL KNAPP -->
+      <button onclick="changeScore('left', 1)" class="w-full py-6 sm:py-9 bg-orange-600 hover:bg-orange-500 active:bg-orange-400 active:scale-98 text-white font-black text-3xl sm:text-5xl rounded-2xl transition shadow-xl border-2 border-orange-400 flex items-center justify-center gap-2 z-10">
+        <span>+ MÅL</span>
+      </button>
+
+      <!-- Liten Korrigeringsknapp (-) -->
+      <button onclick="changeScore('left', -1)" class="absolute bottom-2 left-2 px-3 py-1 bg-slate-900/80 hover:bg-slate-800 active:scale-95 text-xs text-orange-300 font-bold rounded-lg transition z-20 border border-orange-500/30">
+        Angre (-1)
+      </button>
+    </div>
+
+    <!-- Klokke, Periode, Bytteliste & Sidebytte (Midten) -->
+    <div class="flex flex-col items-center justify-center order-first lg:order-none py-2 space-y-3">
+      
+      <!-- Periodevisning & Bytt Side Knapp -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-5 py-1.5 rounded-full shadow">
+          <span class="text-xs uppercase text-slate-400 font-semibold tracking-wider">Kamp:</span>
+          <span id="match-counter-display" class="font-bold text-xl sm:text-2xl text-yellow-400">1</span>
+        </div>
+
+        <!-- Knapp for å bytte side på lagene -->
+        <button onclick="swapSides()" title="Bytt banehalvdel / side for lagene" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 px-4 py-1.5 rounded-full text-xs font-bold transition shadow">
+          <span>🔄</span>
+          <span>Bytt side</span>
+        </button>
+      </div>
+
+      <!-- Kamptidsvisning -->
+      <div id="timer-display" class="digital-font text-7xl sm:text-8xl lg:text-9xl font-bold text-yellow-400 tracking-tight my-1">
+        08:00
+      </div>
+
+      <!-- Kontrollknapper for Kampklokke -->
+      <div class="flex flex-wrap justify-center gap-2 sm:gap-3 w-full">
+        <button id="start-btn" onclick="toggleTimer()" class="px-6 sm:px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 font-black text-xl sm:text-2xl rounded-2xl transition shadow-lg min-w-[130px]">START</button>
+        <button onclick="startNewMatch()" class="px-4 py-3.5 bg-blue-600 hover:bg-blue-500 active:scale-95 font-bold text-white rounded-2xl transition shadow-lg">Ny kamp</button>
+        <button onclick="setCustomTime()" class="px-3.5 py-3.5 bg-slate-800 hover:bg-slate-700 active:scale-95 font-semibold text-slate-300 rounded-2xl transition">Endre tid</button>
+      </div>
+
+      <!-- Byttetimer (60 Sekunder) -->
+      <div id="sub-timer-card" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 mt-2 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md transition-colors duration-300 relative overflow-hidden">
+        
+        <!-- Liten Korrigeringsknapp for byttetid (Plassert i øverste/nederste hjørne likt som "Angre (-1)") -->
+        <button onclick="setCustomSubTime()" class="absolute top-2 right-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-[11px] text-cyan-300 font-bold rounded-lg transition z-20 border border-cyan-500/30">
+          Endre tid
+        </button>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-2xl sm:text-3xl">⏱️</span>
+          <div class="text-left">
+            <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Innbytter-timer</div>
+            <div id="sub-timer-display" class="digital-font text-3xl sm:text-4xl font-bold text-cyan-400">01:00</div>
+          </div>
+        </div>
+
+        <!-- STOR START BYTT KNAPP -->
+        <div class="w-full sm:w-auto flex items-center justify-end pt-1 sm:pt-0">
+          <button onclick="startSubTimer()" class="w-full sm:w-auto px-6 sm:px-10 py-3.5 sm:py-4 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-400 active:scale-98 text-white font-black text-xl sm:text-2xl rounded-xl transition shadow-lg border-2 border-cyan-400 text-center uppercase tracking-wider">
+            START BYTT
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Høyre Lag Box -->
+    <div id="card-right" class="bg-gradient-to-b from-zinc-900 to-zinc-950 border-2 border-zinc-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between items-center relative overflow-hidden min-h-[360px] sm:min-h-[400px]">
+      <input id="name-right" type="text" value="SVART" class="bg-transparent text-2xl sm:text-3xl font-bold text-center text-zinc-300 mb-1 focus:outline-none focus:border-b border-zinc-500 uppercase tracking-wider w-full z-10">
+      
+      <!-- Mål-tall -->
+      <div id="score-right" class="digital-font text-7xl sm:text-8xl lg:text-9xl font-bold text-zinc-100 z-10 my-1 pointer-events-none drop-shadow-md">0</div>
+      
+      <!-- + MÅL KNAPP -->
+      <button onclick="changeScore('right', 1)" class="w-full py-6 sm:py-9 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 active:scale-98 text-white font-black text-3xl sm:text-5xl rounded-2xl transition shadow-xl border-2 border-zinc-500 flex items-center justify-center gap-2 z-10">
+        <span>+ MÅL</span>
+      </button>
+
+      <!-- Liten Korrigeringsknapp (-) -->
+      <button onclick="changeScore('right', -1)" class="absolute bottom-2 right-2 px-3 py-1 bg-zinc-900/90 hover:bg-zinc-800 active:scale-95 text-xs text-zinc-400 font-bold rounded-lg transition z-20 border border-zinc-700">
+        Angre (-1)
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Kamplogg Section -->
+  <section class="max-w-7xl mx-auto w-full mt-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
+    <div class="flex justify-between items-center mb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">📋</span>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Kamplogg / Resultater</h2>
+      </div>
+      <button onclick="clearLog()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs text-slate-400 hover:text-red-400 font-semibold rounded-lg border border-slate-700 transition">
+        Nullstill logg
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs sm:text-sm">
+        <thead>
+          <tr class="border-b border-slate-800 text-slate-500 uppercase tracking-wider">
+            <th class="py-2 px-3">Kamp</th>
+            <th class="py-2 px-3">Ferdig</th>
+            <th class="py-2 px-3">Varighet</th>
+            <th class="py-2 px-3">Resultat</th>
+          </tr>
+        </thead>
+        <tbody id="match-log-body" class="divide-y divide-slate-800/60 font-medium">
+          <tr id="empty-log-msg">
+            <td colspan="4" class="py-4 text-center text-slate-600 italic">Ingen kamper registrert ennå. Trykk "Ny kamp" for å lagre resultatet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="flex justify-between items-center text-xs text-slate-500 pt-3 border-t border-slate-900 mt-4">
+    <span id="wake-lock-status">Skjermdvale: Deaktivert</span>
+    <button onclick="resetAll()" class="hover:text-red-400 transition font-semibold">Nullstill alt</button>
+  </footer>
+
+  <!-- JavaScript logikk -->
+  <script>
+    // Kamptimer variabler
+    let configuredMatchTime = 8 * 60; // Standard 8 minutter
+    let timeLeft = configuredMatchTime;
+    let timerId = null;
+
+    // Lag-tilstander (Venstre vs Høyre)
+    let teamData = {
+      left: {
+        score: 0,
+        theme: 'orange' // theme type
+      },
+      right: {
+        score: 0,
+        theme: 'svart'
+      }
+    };
+
+    let matchCount = 1;
+    let wakeLock = null;
+    let matchHistory = [];
+
+    // Bytteliste variabler
+    let configuredSubTime = 60; // Standard 60 sekunder
+    let subTimeLeft = configuredSubTime;
+    let subTimerId = null;
+
+    const timerDisplay = document.getElementById('timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const matchCounterDisplay = document.getElementById('match-counter-display');
+    const subTimerDisplay = document.getElementById('sub-timer-display');
+    const mainBody = document.getElementById('main-body');
+    const matchLogBody = document.getElementById('match-log-body');
+
+    // UI-oppdatering av kamptid
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Timer start/pause toggle
+    function toggleTimer() {
+      if (timerId) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      if (timeLeft <= 0) return;
+      requestWakeLock();
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+        if (timeLeft <= 0) {
+          pauseTimer();
+          playBuzzer();
+          triggerBlinking();
+        }
+      }, 1000);
+      startBtn.textContent = 'PAUSE';
+      startBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+      startBtn.classList.add('bg-amber-600', 'hover:bg-amber-500');
+    }
+
+    function pauseTimer() {
+      clearInterval(timerId);
+      timerId = null;
+      startBtn.textContent = 'START';
+      startBtn.classList.remove('bg-amber-600', 'hover:bg-amber-500');
+      startBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timeLeft = configuredMatchTime;
+      updateDisplay();
+    }
+
+    function setCustomTime() {
+      pauseTimer();
+      const input = prompt("Tast inn minutter:", Math.floor(configuredMatchTime / 60));
+      if (input !== null && !isNaN(input) && input >= 0) {
+        configuredMatchTime = parseInt(input) * 60;
+        timeLeft = configuredMatchTime;
+        updateDisplay();
+      }
+    }
+
+    function startNewMatch() {
+      pauseTimer();
+
+      // Hent lagnavn og poeng for loggføring
+      const leftName = document.getElementById('name-left').value || 'Lag 1';
+      const rightName = document.getElementById('name-right').value || 'Lag 2';
+      const leftScore = teamData.left.score;
+      const rightScore = teamData.right.score;
+
+      // Beregn faktisk spilt tid (opprinnelig tid minus gjenstående tid)
+      const playedSecondsTotal = Math.max(0, configuredMatchTime - timeLeft);
+      const durMinutes = Math.floor(playedSecondsTotal / 60);
+      const durSeconds = playedSecondsTotal % 60;
+      
+      let durationStr = "";
+      if (durMinutes > 0 && durSeconds > 0) {
+        durationStr = `${durMinutes}m ${durSeconds}s`;
+      } else if (durMinutes > 0) {
+        durationStr = `${durMinutes}m`;
+      } else {
+        durationStr = `${durSeconds}s`;
+      }
+
+      // Hent nåværende klokkeslett (HH:MM)
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+      // Legg til i loggen
+      matchHistory.push({
+        matchNum: matchCount,
+        time: timeStr,
+        duration: durationStr,
+        resultStr: `${leftName} ${leftScore} - ${rightScore} ${rightName}`
+      });
+
+      renderLog();
+
+      timeLeft = configuredMatchTime;
+      updateDisplay();
+      
+      // Nullstill poeng
+      teamData.left.score = 0;
+      teamData.right.score = 0;
+      document.getElementById('score-left').textContent = 0;
+      document.getElementById('score-right').textContent = 0;
+
+      // Øk kamp-telleren
+      matchCount++;
+      matchCounterDisplay.textContent = matchCount;
+      
+      clearInterval(subTimerId);
+      subTimerId = null;
+      subTimeLeft = configuredSubTime;
+      const subCard = document.getElementById('sub-timer-card');
+      subCard.classList.remove('sub-timer-expired');
+      updateSubDisplay();
+    }
+
+    function renderLog() {
+      if (matchHistory.length === 0) {
+        matchLogBody.innerHTML = `
+          <tr id="empty-log-msg">
+            <td colspan="4" class="py-4 text-center text-slate-600 italic">Ingen kamper registrert ennå. Trykk "Ny kamp" for å lagre resultatet.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      matchLogBody.innerHTML = matchHistory.map(item => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="py-2.5 px-3 font-bold text-yellow-400">Kamp ${item.matchNum}</td>
+          <td class="py-2.5 px-3 text-slate-400">${item.time}</td>
+          <td class="py-2.5 px-3 text-cyan-400 font-semibold">${item.duration}</td>
+          <td class="py-2.5 px-3 font-semibold text-white">${item.resultStr}</td>
+        </tr>
+      `).join('');
+    }
+
+    function clearLog() {
+      matchHistory = [];
+      renderLog();
+    }
+
+    function changeScore(side, delta) {
+      teamData[side].score = Math.max(0, teamData[side].score + delta);
+      document.getElementById(`score-${side}`).textContent = teamData[side].score;
+    }
+
+    function swapSides() {
+      // 1. Bytt navn i input-feltene
+      const leftInput = document.getElementById('name-left');
+      const rightInput = document.getElementById('name-right');
+      const tempName = leftInput.value;
+      leftInput.value = rightInput.value;
+      rightInput.value = tempName;
+
+      // 2. Bytt poengsummer
+      const tempScore = teamData.left.score;
+      teamData.left.score = teamData.right.score;
+      teamData.right.score = tempScore;
+
+      document.getElementById('score-left').textContent = teamData.left.score;
+      document.getElementById('score-right').textContent = teamData.right.score;
+
+      // 3. Bytt visuelle temaer (farger/klasser)
+      const tempTheme = teamData.left.theme;
+      teamData.left.theme = teamData.right.theme;
+      teamData.right.theme = tempTheme;
+
+      applyTeamThemes();
+    }
+
+    // Oppdaterer fargetema og stil på boksene basert på gjeldende side
+    function applyTeamThemes() {
+      const cardLeft = document.getElementById('card-left');
+      const cardRight = document.getElementById('card-right');
+      const nameLeft = document.getElementById('name-left');
+      const nameRight = document.getElementById('name-right');
+
+      // Orange tema CSS-klasser
+      const orangeCardClasses = ['bg-gradient-to-b', 'from-orange-950/80', 'to-orange-900/60', 'border-2', 'border-orange-500/50'];
+      const orangeTextClasses = ['text-orange-400', 'border-orange-400'];
+
+      // Svart tema CSS-klasser
+      const svartCardClasses = ['bg-gradient-to-b', 'from-zinc-900', 'to-zinc-950', 'border-2', 'border-zinc-700/80'];
+      const svartTextClasses = ['text-zinc-300', 'border-zinc-500'];
+
+      if (teamData.left.theme === 'orange') {
+        setCardStyle(cardLeft, nameLeft, orangeCardClasses, orangeTextClasses, svartCardClasses, svartTextClasses);
+        setCardStyle(cardRight, nameRight, svartCardClasses, svartTextClasses, orangeCardClasses, orangeTextClasses);
+      } else {
+        setCardStyle(cardLeft, nameLeft, svartCardClasses, svartTextClasses, orangeCardClasses, orangeTextClasses);
+        setCardStyle(cardRight, nameRight, orangeCardClasses, orangeTextClasses, svartCardClasses, svartTextClasses);
+      }
+    }
+
+    function setCardStyle(cardEl, inputEl, addCard, addText, removeCard, removeText) {
+      cardEl.classList.remove(...removeCard);
+      cardEl.classList.add(...addCard);
+      inputEl.classList.remove(...removeText);
+      inputEl.classList.add(...addText);
+    }
+
+    function resetAll() {
+      if (confirm("Vil du nullstille alt (poeng, tid, lagnavn, kampnr og logg)?")) {
+        // Tilbakestill til standard (Orange venstre, Svart høyre)
+        teamData.left.theme = 'orange';
+        teamData.right.theme = 'svart';
+        document.getElementById('name-left').value = 'ORANGE';
+        document.getElementById('name-right').value = 'SVART';
+        applyTeamThemes();
+
+        pauseTimer();
+        timeLeft = configuredMatchTime;
+        updateDisplay();
+
+        teamData.left.score = 0;
+        teamData.right.score = 0;
+        document.getElementById('score-left').textContent = 0;
+        document.getElementById('score-right').textContent = 0;
+
+        matchCount = 1;
+        matchCounterDisplay.textContent = matchCount;
+
+        clearLog();
+
+        clearInterval(subTimerId);
+        subTimerId = null;
+        configuredSubTime = 60;
+        subTimeLeft = configuredSubTime;
+        const subCard = document.getElementById('sub-timer-card');
+        subCard.classList.remove('sub-timer-expired');
+        updateSubDisplay();
+      }
+    }
+
+    // Innbytter-timer logikk
+    function updateSubDisplay() {
+      const minutes = Math.floor(subTimeLeft / 60);
+      const seconds = subTimeLeft % 60;
+      subTimerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function setCustomSubTime() {
+      clearInterval(subTimerId);
+      subTimerId = null;
+      const subCard = document.getElementById('sub-timer-card');
+      subCard.classList.remove('sub-timer-expired');
+
+      const input = prompt("Tast inn byttetid i sekunder:", configuredSubTime);
+      if (input !== null && !isNaN(input) && input > 0) {
+        configuredSubTime = parseInt(input);
+        subTimeLeft = configuredSubTime;
+        updateSubDisplay();
+      }
+    }
+
+    function startSubTimer() {
+      clearInterval(subTimerId);
+      subTimeLeft = configuredSubTime;
+      
+      // Tilbakestill bakgrunnen og fargen
+      const subCard = document.getElementById('sub-timer-card');
+      subCard.classList.remove('sub-timer-expired');
+      
+      updateSubDisplay();
+      
+      subTimerId = setInterval(() => {
+        subTimeLeft--;
+        updateSubDisplay();
+        if (subTimeLeft <= 0) {
+          clearInterval(subTimerId);
+          subTimerId = null;
+          // Sett rød alarm-bakgrunn når tiden er utløpt
+          subCard.classList.add('sub-timer-expired');
+        }
+      }, 1000);
+    }
+
+    // Lydsignal ved kampslutt
+    function playBuzzer() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.5);
+      } catch (e) {
+        console.log("Audio API not supported or blocked", e);
+      }
+    }
+
+    // Blinking i 15 sekunder ved kampslutt
+    function triggerBlinking() {
+      mainBody.classList.add('animate-blink-red');
+      setTimeout(() => {
+        mainBody.classList.remove('animate-blink-red');
+      }, 15000);
+    }
+
+    // Forhindre dvalemodus
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          document.getElementById('wake-lock-status').textContent = 'Skjermdvale: Blokkert (Skjerm holdes på)';
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
+
+    updateDisplay();
+    updateSubDisplay();
+  </script>
+</body>
+</html>
