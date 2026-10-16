@@ -12,8 +12,8 @@
     }
 
     @keyframes match-end-blink {
-      0%, 100% { background-color: #020617; } /* slate-950 */
-      50% { background-color: #991b1b; }      /* red-800 */
+      0%, 100% { background-color: #020617; }
+      50% { background-color: #991b1b; }
     }
 
     .animate-blink-red {
@@ -37,115 +37,115 @@
     }
   </style>
 </head>
-<body id="main-body" class="bg-slate-950 text-white select-none h-screen w-screen flex flex-col justify-between p-2 sm:p-4 transition-colors duration-200 overflow-hidden">
+<body id="main-body" class="bg-slate-950 text-white select-none h-screen w-screen flex flex-col justify-between p-1.5 sm:p-3 transition-colors duration-200 overflow-hidden">
 
   <!-- Minimal Header -->
-  <header class="text-center shrink-0 py-0.5">
-    <h1 class="text-xs sm:text-sm font-semibold tracking-widest text-slate-400 uppercase">Innebandy Match Center</h1>
+  <header class="text-center shrink-0">
+    <h1 class="text-[10px] sm:text-xs font-semibold tracking-widest text-slate-400 uppercase">Innebandy Match Center</h1>
   </header>
 
-  <!-- Hovedinnhold / Match Grid (Spenner over tilgjengelig plass på skjermen) -->
-  <main class="flex-1 w-full max-w-5xl mx-auto flex flex-col justify-between gap-1.5 py-1 min-h-0 overflow-hidden">
+  <!-- Hovedinnhold / Match Grid (Strengt tilpasset skjermhøyden) -->
+  <main class="flex-1 w-full max-w-5xl mx-auto flex flex-col justify-between gap-1 py-0.5 min-h-0 overflow-hidden">
     
-    <!-- Top Row: Måltavler for begge lag ved siden av hverandre på mobil -->
-    <div class="grid grid-cols-2 gap-2 flex-1 min-h-0">
+    <!-- Top Row: Måltavler for begge lag med doblet høyde på +MÅL knappene -->
+    <div class="grid grid-cols-2 gap-1.5 flex-[1.4] min-h-0">
       
       <!-- Venstre Lag Box -->
-      <div id="card-left" class="bg-gradient-to-b from-orange-950/80 to-orange-900/60 border border-orange-500/50 rounded-2xl p-2 shadow-lg flex flex-col justify-between items-center relative overflow-hidden h-full">
+      <div id="card-left" class="bg-gradient-to-b from-orange-950/80 to-orange-900/60 border border-orange-500/50 rounded-xl p-1.5 shadow-lg flex flex-col justify-between items-center relative overflow-hidden h-full">
         <div class="flex justify-between items-center w-full z-10 gap-1">
-          <input id="name-left" type="text" value="ORANGE" class="bg-transparent text-lg sm:text-2xl font-bold text-center text-orange-400 focus:outline-none focus:border-b border-orange-400 uppercase tracking-wider w-full">
-          <button onclick="changeScore('left', -1)" class="px-2 py-0.5 bg-slate-900/80 hover:bg-slate-800 text-[10px] text-orange-300 font-bold rounded border border-orange-500/30 shrink-0">
+          <input id="name-left" type="text" value="ORANGE" class="bg-transparent text-base sm:text-xl font-bold text-center text-orange-400 focus:outline-none focus:border-b border-orange-400 uppercase tracking-wider w-full">
+          <button onclick="changeScore('left', -1)" class="px-1.5 py-0.5 bg-slate-900/80 hover:bg-slate-800 text-[9px] text-orange-300 font-bold rounded border border-orange-500/30 shrink-0">
             -1
           </button>
         </div>
         
         <!-- Mål-tall -->
-        <div id="score-left" class="digital-font text-5xl sm:text-7xl font-bold text-orange-100 my-auto pointer-events-none drop-shadow-md">0</div>
+        <div id="score-left" class="digital-font text-4xl sm:text-6xl font-bold text-orange-100 my-auto pointer-events-none drop-shadow-md">0</div>
         
-        <!-- + MÅL KNAPP -->
-        <button onclick="changeScore('left', 1)" class="w-full py-2.5 sm:py-4 bg-orange-600 hover:bg-orange-500 active:bg-orange-400 text-white font-black text-xl sm:text-3xl rounded-xl transition shadow-md border border-orange-400 flex items-center justify-center gap-1 z-10 shrink-0">
+        <!-- GIGANTISK/DOBBELT SÅ HØY + MÅL KNAPP (GUL) -->
+        <button onclick="changeScore('left', 1)" class="w-full py-4 sm:py-6 bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-200 text-slate-950 font-black text-2xl sm:text-4xl rounded-lg transition shadow-md border border-yellow-300 flex items-center justify-center gap-1 z-10 shrink-0">
           <span>+ MÅL</span>
         </button>
       </div>
 
       <!-- Høyre Lag Box -->
-      <div id="card-right" class="bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-700/80 rounded-2xl p-2 shadow-lg flex flex-col justify-between items-center relative overflow-hidden h-full">
+      <div id="card-right" class="bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-700/80 rounded-xl p-1.5 shadow-lg flex flex-col justify-between items-center relative overflow-hidden h-full">
         <div class="flex justify-between items-center w-full z-10 gap-1">
-          <input id="name-right" type="text" value="SVART" class="bg-transparent text-lg sm:text-2xl font-bold text-center text-zinc-300 focus:outline-none focus:border-b border-zinc-500 uppercase tracking-wider w-full">
-          <button onclick="changeScore('right', -1)" class="px-2 py-0.5 bg-zinc-900/90 hover:bg-zinc-800 text-[10px] text-zinc-400 font-bold rounded border border-zinc-700 shrink-0">
+          <input id="name-right" type="text" value="SVART" class="bg-transparent text-base sm:text-xl font-bold text-center text-zinc-300 focus:outline-none focus:border-b border-zinc-500 uppercase tracking-wider w-full">
+          <button onclick="changeScore('right', -1)" class="px-1.5 py-0.5 bg-zinc-900/90 hover:bg-zinc-800 text-[9px] text-zinc-400 font-bold rounded border border-zinc-700 shrink-0">
             -1
           </button>
         </div>
         
         <!-- Mål-tall -->
-        <div id="score-right" class="digital-font text-5xl sm:text-7xl font-bold text-zinc-100 my-auto pointer-events-none drop-shadow-md">0</div>
+        <div id="score-right" class="digital-font text-4xl sm:text-6xl font-bold text-zinc-100 my-auto pointer-events-none drop-shadow-md">0</div>
         
-        <!-- + MÅL KNAPP -->
-        <button onclick="changeScore('right', 1)" class="w-full py-2.5 sm:py-4 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white font-black text-xl sm:text-3xl rounded-xl transition shadow-md border border-zinc-500 flex items-center justify-center gap-1 z-10 shrink-0">
+        <!-- GIGANTISK/DOBBELT SÅ HØY + MÅL KNAPP (GUL) -->
+        <button onclick="changeScore('right', 1)" class="w-full py-4 sm:py-6 bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-200 text-slate-950 font-black text-2xl sm:text-4xl rounded-lg transition shadow-md border border-yellow-300 flex items-center justify-center gap-1 z-10 shrink-0">
           <span>+ MÅL</span>
         </button>
       </div>
 
     </div>
 
-    <!-- Midtre Del: Kampklokke & Kontroller -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2 flex flex-col items-center justify-center shrink-0">
+    <!-- Midtre Del: Kampklokke (Større tall) & Kontroller -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-1.5 flex flex-col items-center justify-center shrink-0">
       
-      <div class="flex items-center justify-between w-full px-2 mb-0.5">
-        <div class="flex items-center gap-1.5 bg-slate-950 px-3 py-0.5 rounded-full border border-slate-800">
-          <span class="text-[10px] uppercase text-slate-400 font-semibold">Kamp:</span>
-          <span id="match-counter-display" class="font-bold text-sm text-yellow-400">1</span>
+      <div class="flex items-center justify-between w-full px-1">
+        <div class="flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-full border border-slate-800">
+          <span class="text-[9px] uppercase text-slate-400 font-semibold">Kamp:</span>
+          <span id="match-counter-display" class="font-bold text-xs text-yellow-400">1</span>
         </div>
 
-        <!-- Kamptidsvisning -->
-        <div id="timer-display" class="digital-font text-4xl sm:text-6xl font-bold text-yellow-400 tracking-tight leading-none">
+        <!-- STØRRE Kamptidsvisning -->
+        <div id="timer-display" class="digital-font text-6xl sm:text-8xl font-bold text-yellow-400 tracking-tight leading-none">
           08:00
         </div>
 
-        <button onclick="swapSides()" title="Bytt banehalvdel" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+        <button onclick="swapSides()" title="Bytt banehalvdel" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2 py-0.5 rounded-full text-[9px] font-bold">
           <span>🔄</span> Side
         </button>
       </div>
 
       <!-- Kontrollknapper for Kampklokke -->
-      <div class="grid grid-cols-3 gap-1.5 w-full mt-1">
-        <button id="start-btn" onclick="toggleTimer()" class="py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 font-black text-sm sm:text-base rounded-xl transition shadow">START</button>
-        <button onclick="startNewMatch()" class="py-2 bg-blue-600 hover:bg-blue-500 active:scale-95 font-bold text-xs sm:text-sm text-white rounded-xl transition shadow">Ny kamp</button>
-        <button onclick="setCustomTime()" class="py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 font-semibold text-xs text-slate-300 rounded-xl transition border border-slate-700">Endre tid</button>
+      <div class="grid grid-cols-3 gap-1 w-full mt-1">
+        <button id="start-btn" onclick="toggleTimer()" class="py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 font-black text-xs sm:text-sm rounded-lg transition shadow">START</button>
+        <button onclick="startNewMatch()" class="py-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 font-bold text-[11px] sm:text-xs text-white rounded-lg transition shadow">Ny kamp</button>
+        <button onclick="setCustomTime()" class="py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 font-semibold text-[10px] text-slate-300 rounded-lg transition border border-slate-700">Endre tid</button>
       </div>
     </div>
 
     <!-- Innbytter-timer -->
-    <div id="sub-timer-card" class="bg-slate-900 border border-slate-800 rounded-2xl p-2 flex items-center justify-between gap-2 shadow shrink-0 relative overflow-hidden">
-      <button onclick="setCustomSubTime()" class="absolute top-1 right-1 px-1.5 py-0.5 bg-slate-800 text-[9px] text-cyan-300 font-bold rounded border border-cyan-500/30 z-20">
+    <div id="sub-timer-card" class="bg-slate-900 border border-slate-800 rounded-xl p-1.5 flex items-center justify-between gap-1 shadow shrink-0 relative overflow-hidden">
+      <button onclick="setCustomSubTime()" class="absolute top-0.5 right-0.5 px-1 py-0.5 bg-slate-800 text-[8px] text-cyan-300 font-bold rounded border border-cyan-500/30 z-20">
         Endre
       </button>
 
-      <div class="flex items-center gap-2">
-        <span class="text-xl">⏱️</span>
+      <div class="flex items-center gap-1.5">
+        <span class="text-base">⏱️</span>
         <div>
-          <div class="text-[9px] text-slate-400 font-bold uppercase">Innbytter</div>
-          <div id="sub-timer-display" class="digital-font text-2xl font-bold text-cyan-400 leading-none">01:00</div>
+          <div class="text-[8px] text-slate-400 font-bold uppercase">Innbytter</div>
+          <div id="sub-timer-display" class="digital-font text-xl font-bold text-cyan-400 leading-none">01:00</div>
         </div>
       </div>
 
-      <button onclick="startSubTimer()" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 active:scale-95 text-white font-black text-sm sm:text-base rounded-xl transition border border-cyan-400 uppercase tracking-wider shadow">
+      <button onclick="startSubTimer()" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 active:scale-95 text-white font-black text-xs sm:text-sm rounded-lg transition border border-cyan-400 uppercase tracking-wider shadow">
         START BYTT
       </button>
     </div>
 
-    <!-- Mini Kamplogg Section (Areal-tilpasset med intern scroll) -->
-    <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-1.5 shrink-0 max-h-24 overflow-hidden flex flex-col">
-      <div class="flex justify-between items-center mb-1 px-1">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">📋 Kamplogg</span>
-        <button onclick="clearLog()" class="text-[9px] text-slate-500 hover:text-red-400 font-semibold">Nullstill</button>
+    <!-- Mini Kamplogg Section (Fast plassering nederst, forhindrer overlapping) -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-1.5 shrink-0 flex flex-col h-20 sm:h-24 overflow-hidden">
+      <div class="flex justify-between items-center mb-0.5 px-0.5 shrink-0">
+        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400">📋 Kamplogg</span>
+        <button onclick="clearLog()" class="text-[8px] text-slate-500 hover:text-red-400 font-semibold">Nullstill</button>
       </div>
 
-      <div class="overflow-y-auto flex-1 text-[11px] pr-1">
+      <div class="overflow-y-auto flex-1 text-[10px] pr-0.5">
         <table class="w-full text-left">
           <tbody id="match-log-body" class="divide-y divide-slate-800/60">
             <tr id="empty-log-msg">
-              <td colspan="4" class="py-1 text-center text-slate-600 italic">Ingen kamper registrert.</td>
+              <td colspan="4" class="py-0.5 text-center text-slate-600 italic">Ingen kamper registrert.</td>
             </tr>
           </tbody>
         </table>
@@ -155,7 +155,7 @@
   </main>
 
   <!-- Minimal Footer -->
-  <footer class="flex justify-between items-center text-[10px] text-slate-500 shrink-0 pt-0.5 border-t border-slate-900">
+  <footer class="flex justify-between items-center text-[9px] text-slate-500 shrink-0 border-t border-slate-900 pt-0.5">
     <span id="wake-lock-status">Dvale: Deaktivert</span>
     <button onclick="resetAll()" class="hover:text-red-400 transition font-semibold">Nullstill alt</button>
   </footer>
@@ -290,7 +290,7 @@
       if (matchHistory.length === 0) {
         matchLogBody.innerHTML = `
           <tr id="empty-log-msg">
-            <td colspan="4" class="py-1 text-center text-slate-600 italic">Ingen kamper registrert.</td>
+            <td colspan="4" class="py-0.5 text-center text-slate-600 italic">Ingen kamper registrert.</td>
           </tr>
         `;
         return;
